@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "703786900453",
+    "firebase_url": "https://flashpoint-asdevelopers-default-rtdb.firebaseio.com",
     "project_id": "flashpoint-asdevelopers",
     "storage_bucket": "flashpoint-asdevelopers.appspot.com"
   },

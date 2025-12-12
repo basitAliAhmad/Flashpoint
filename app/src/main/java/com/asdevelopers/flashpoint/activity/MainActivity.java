@@ -3,7 +3,6 @@ package com.asdevelopers.flashpoint.activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.asdevelopers.flashpoint.R;
 import com.asdevelopers.flashpoint.adapter.HomeRecyclerViewAdapter;
 import com.asdevelopers.flashpoint.model.Database;
-import com.asdevelopers.flashpoint.model.Deck;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,7 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     Database database;
     DatabaseReference databaseReference;
     DataSnapshot data;
+    HashMap<String, Object> map;
 
     public void resetDisplayedData() {
         homeRecyclerViewAdapter = new HomeRecyclerViewAdapter(this, database);
@@ -80,19 +78,18 @@ public class MainActivity extends AppCompatActivity {
         if (userID == null)
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
 
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userID);
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(userID);
 
-        HashMap<String, Object> map = new HashMap<>();
 
-        databaseReference.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                data = task.getResult();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                map = snapshot.getValue(new GenericTypeIndicator<HashMap<String, Object>>() {});
+            }
 
-                map = data.getValue(String.class);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-                for (DataSnapshot d: data.getChildren()) {
-                    map.put(d.getKey(), d.getValue());
-                }
             }
         });
 
